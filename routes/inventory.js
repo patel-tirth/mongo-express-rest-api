@@ -68,8 +68,6 @@ router.get('/:inventoryId', async (req,res) => {
     }
   
 });
-
-
 // update inventory by id 
 router.put('/:inventoryId', async (req,res) => {
     try{

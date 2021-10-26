@@ -57,7 +57,6 @@ router.put('/:customerId', async (req,res) => {
   
 });
 
-
 // delete customer by id
 router.delete('/:customerId', async(req,res) => {
   
