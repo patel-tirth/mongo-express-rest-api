@@ -6,17 +6,16 @@ const express = require('express');
 const mongoose = require('mongoose')
 const app = express();
 const CustomError = require('./utils/customError')
-// const cors = require('cors');
+// const cors = require('cors');   // disabling cors for developement
+const customersRoute = require('./routes/customers');
+const inventoryRoute  = require('./routes/inventory');
+const repairsRoute = require('./routes/repairs');
 
 // middleware
 app.use(express.urlencoded({extended: true}));
 app.use(express.json()); // convert the response to json on every route
 // app.use(cors);  // enable cors 
 
-
-const customersRoute = require('./routes/customers');
-const inventoryRoute  = require('./routes/inventory');
-const repairsRoute = require('./routes/repairs');
 
 app.use('/customers', customersRoute);
 app.use('/inventory', inventoryRoute);

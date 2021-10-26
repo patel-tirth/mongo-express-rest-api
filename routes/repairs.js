@@ -4,21 +4,18 @@ const Customer = require('../models/Customer')
 const Inventory = require('../models/Inventory')
 const router = express.Router();
 const CustomError = require('../utils/customError')
+const catchError = require('../utils/catchError')
 
 // retrieve all repairs
-router.get('/', async (req,res,next) => {
-    try{
+router.get('/', catchError(async (req,res,next) => {
         const repairs = await Repair.find();
         res.json(repairs)
-    } catch(err){
-        next(err)
-        
-    }
-});
+
+}));
 
 
 // add a new repair
-router.post('/', async (req,res,next) => {
+router.post('/', catchError(async (req,res,next) => {
 
    const repair = new Repair(req.body)
 //    console.log(repair)
@@ -27,10 +24,11 @@ router.post('/', async (req,res,next) => {
    // get the ids for parts required for repair
    const ids = repair.inventoryRequired.map(item => item._id); 
    // check if these parts are available in inventory
-   const items =  await Inventory.find({ '_id': { $in: ids} })  
-    console.log(items.length)
-    console.log(ids.length)
-   try {
+   const items =  await Inventory.find({ '_id': { $in: ids} , 'total_available': {$gt: 0}}) ;
+    
+        if(items.length ==0 || items.length != repair.inventoryRequired.length){
+            throw new CustomError("Items not available in inventory",400);
+         }
        // check if customer exists and all parts are available in inventory before scheduling the repair
        if(customer && items != null && (items.length == ids.length) && items.length!=0){
         //   await Inventory.findByIdAndUpdate({'_id': "61761bf31f8766dc0be697e3"}, {$inc: {total_available: -1}},{new :true} )
@@ -58,24 +56,18 @@ router.post('/', async (req,res,next) => {
            }
            throw new CustomError("Customer does not exist in database",400);
        }
-   } catch (err) {
-       next(err)
-   }
-
-});
+   
+}));
 
 
 // get repair by id
-router.get('/:repairId', async (req,res,next) => {
-    
-    try{
+router.get('/:repairId', catchError(async (req,res,next) => {
+
         const repair = await Repair.findById(req.params.repairId)
         res.json(repair);
-    } catch(err){
-        next(err)
-    }
+   
   
-});
+}));
 
 // function to check if items exists in inventory
 // params:  ids of items
@@ -110,7 +102,7 @@ async function updateInventory(items,repair){
 }
 
 // update repairs by id 
-router.put('/:repairId', async (req,res,next) => {
+router.put('/:repairId', catchError(async (req,res,next) => {
     const repair = new Repair(req.body)
     // console.log(repair.customer)
     // console.log(req.body)
@@ -119,8 +111,7 @@ router.put('/:repairId', async (req,res,next) => {
     // get requested ids for items
     const ids = repair.inventoryRequired.map(item => item._id); 
     
-    // console.log(ids)
-    try{
+     // console.log(ids)
         // before updating the repair, check if inventory has desired items for this new repair
         // also checking if customer is changed for this repair, check if new customer is present in database
 
@@ -138,9 +129,6 @@ router.put('/:repairId', async (req,res,next) => {
                 
                 // get only the inventory ids that are new in update request
                const differentIds= ids.filter(id => !(getRepair.inventoryRequired.includes(id)));
-               console.log(ids)
-               console.log(getRepair.inventoryRequired)
-            
         
                const differentItemsDoc = await Inventory.find({ '_id': { $in: differentIds} })
                // update the realted documents, inventory and repairs if repair is updated with different items
@@ -154,11 +142,9 @@ router.put('/:repairId', async (req,res,next) => {
             }
             throw new CustomError("Item does not exist in inventory",400)
         }
-    } catch(err){
-        next(err)
-    }
+    
   
-});
+}));
 
 // function to update inventory with item increments  and also remove repairs from customer
 //params: list of inventory documents, repair document
@@ -180,44 +166,37 @@ const updateInventoryAndCustomerInc = async (items, repair) => {
 
 
 // delete a scheduled repair by id
-router.delete('/:repairId', async(req,res,next) => {
-    try{
-            const repair = await Repair.findById({_id: req.params.repairId});
-            // console.log(itemsReturned)
-            // const itemsReturned = req.body.inventoryRequired.map(item => item._id); 
-            const itemReturnedDocs = await Inventory.find({ '_id': { $in: repair.inventoryRequired} }) 
-            // console.log(itemsReturned)
-            const repairDelete = await Repair.deleteOne({_id: req.params.repairId});
-           
-            // after deleting the repair, increment the count of items that were required for this repair
-            // also delete customer's scheduled repairs
-            
+router.delete('/:repairId', catchError(async(req,res,next) => {
 
-            updateInventoryAndCustomerInc(itemReturnedDocs,repair);
-            
-            res.json(repairDelete)
+    const repair = await Repair.findById({_id: req.params.repairId});
+    // console.log(itemsReturned)
+    // const itemsReturned = req.body.inventoryRequired.map(item => item._id); 
+    const itemReturnedDocs = await Inventory.find({ '_id': { $in: repair.inventoryRequired} }) 
+    // console.log(itemsReturned)
+    const repairDelete = await Repair.deleteOne({_id: req.params.repairId});
+    
+    // after deleting the repair, increment the count of items that were required for this repair
+    // also delete customer's scheduled repairs
+    
+    updateInventoryAndCustomerInc(itemReturnedDocs,repair);
+    
+    res.json(repairDelete)
         
-    } catch(err) {
-        next(err);
-    }
-})
+}));
 
 //update schedule date for repair id
-router.post('/:repairId/schedule', async (req,res,next) => {
-    try {
+router.post('/:repairId/schedule', catchError(async (req,res,next) => {
+
         // get the specific repair doc
+
+    const repairScheduleUpdated = await Repair.findByIdAndUpdate(
+        req.params.repairId,
+        {$set :{scheduledDate: req.body.scheduledDate}},
+        {new :true} 
+        ) 
     
-        const repairScheduleUpdated = await Repair.findByIdAndUpdate(
-            req.params.repairId,
-            {$set :{scheduledDate: req.body.scheduledDate}},
-            {new :true} 
-            ) 
-       
-       res.json(repairScheduleUpdated);
-    } catch (err) {
-        next(err)
-    }
-})
+    res.json(repairScheduleUpdated);
+}));
 
 
 module.exports = router;
