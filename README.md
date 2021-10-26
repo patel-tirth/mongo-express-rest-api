@@ -2,7 +2,7 @@
 
 #### Tech Stack: Express, MongoDB, Mongoose ODM, Postman.
 
-This is a REST API for a fictional bicycle shop allowing seamless scheduling repairs and managing inventory for customers. 
+This is a REST API for a fictional bicycle shop allowing seamless scheduling of repairs and managing inventory for customers. 
 
 To test the API, follow the steps below:
 
