@@ -31,6 +31,8 @@ The documents will be created as endpoints are tested.
 ### Example structure and endpoints for this API are described below:
 
 ### Sample endpoint examples for CUSTOMER model
+
+### Request
 ``` POST localhost:3000/customers```
 ```
 {
@@ -54,6 +56,7 @@ The documents will be created as endpoints are tested.
 ```
 #### NOTE: ```repairs``` should not be specifed when creating a customer. ```repairs``` for a customer are created through ``` POST localhost:3000/repairs```.
 
+### Request
 ``` GET localhost:3000/customers```
 ### Response 
 ```
@@ -80,6 +83,7 @@ The documents will be created as endpoints are tested.
     }
  ]
 ```
+### Request
 ``` GET localhost:3000/customers/61787815b7e7d79ad07a8c25```
 ### Response 
 ```
@@ -95,6 +99,7 @@ The documents will be created as endpoints are tested.
 }
 ```
 
+### Request
 ``` PUT localhost:3000/customers/61787815b7e7d79ad07a8c25```
 ```
 {
@@ -114,6 +119,7 @@ The documents will be created as endpoints are tested.
     "__v": 0
 }
 ```
+### Request
 ``` DELETE localhost:3000/customers/6178748fcfaee206902c6ddf```
 ### Response 
 ```
@@ -124,6 +130,7 @@ The documents will be created as endpoints are tested.
 
 ### Sample endpoint examples for INVENTORY model
 
+### Request
 ``` POST localhost:3000/inventory```
 ```
  "category": "accessories",
@@ -149,7 +156,7 @@ The documents will be created as endpoints are tested.
 ```
 ```repair_scheduled``` can also be specified as an array of ids from repair document given that the repair already exists in repair document. This will add this inventory item as ```inventoryRequired``` to repair document. Follow along..
 
-
+### Request
 ``` GET localhost:3000/inventory```
 
 ### Response 
@@ -245,7 +252,10 @@ The documents will be created as endpoints are tested.
     }
 ]
 ```
+
+### Request
 ``` GET localhost:3000/inventory/61787ae5b7e7d79ad07a8c41```
+
 ### Response
 ```
 {
@@ -261,6 +271,7 @@ The documents will be created as endpoints are tested.
         "__v": 0
     }
 ```
+### Request
 
 ``` PUT localhost:3000/inventory/61787ae5b7e7d79ad07a8c41```
 ``` 
@@ -282,12 +293,16 @@ The documents will be created as endpoints are tested.
         "__v": 0
     }
 ```
+### Request
+
 ``` DELETE localhost:3000/inventory/61787ae5b7e7d79ad07a8c41```
+
 ### Response 
 ```
 deletedCount: 1
 
 ```
+### Request
 ``` POST localhost:3000/repairs ```
 ```
 {
@@ -299,6 +314,20 @@ deletedCount: 1
 ]
 }
 ```
+
+### Response
+```
+{
+    "scheduledDate": "2021-09-30T21:44:20.230Z",
+    "customer": "617878f4b7e7d79ad07a8c2f",
+    "description": "fix brake",
+    "inventoryRequired": [
+        "617879a2b7e7d79ad07a8c34"
+    ],
+    "_id": "6178d804b7a8b973c130c9e7"
+}
+```
+
 #### Note: To schedule a repair as above, the following conditions should be true, else it will throw error:
 1) The ```customer``` should exist in customer document.
 2) Inventory id / ids specified in ```inventoryRequired``` should exist in the inventory document. 
@@ -308,7 +337,11 @@ After properly scheduling the repair, corresponding customer document will be up
 The corresponding inventory items will also be updated with ```repair_scheduled``` denoting that the item is scheduled for a repair. 
 Also, the total available count of inventory item/items required for this repair will be decremented by 1. 
 
+### Request
+
 ``` GET localhost:3000/repairs ```
+
+### Response
 ```
 [
     {
@@ -333,6 +366,8 @@ Also, the total available count of inventory item/items required for this repair
     }
 ]
 ```
+### Request
+
 ``` GET localhost:3000/repairs/6178778db7e7d79ad07a8c1e ```
 ### Response 
 ```
@@ -347,18 +382,38 @@ Also, the total available count of inventory item/items required for this repair
     "__v": 0
 }
 ```
+### Request
+
 ``` PUT localhost:3000/repairs/6178778db7e7d79ad07a8c1e ```
 ``` 
 {
-"customer": "6178748fcfaee206902c6ddf"
+"customer": "6178748fcfaee206902c6ddf",
 "description": "fix brake and bicyle",
 "inventoryRequired": [
     "617879a2b7e7d79ad07a8c34", "617876b4b7e7d79ad07a8c17"
 ]
 }
 ```
+
+### Response
+
+```
+{
+    "_id": "6178778db7e7d79ad07a8c1e",
+    "scheduledDate": "2021-10-27T21:44:20.230Z",
+    "customer": "6178748fcfaee206902c6ddf",
+    "description": "fix brake and bicyle",
+    "inventoryRequired": [
+        "617879a2b7e7d79ad07a8c34",
+        "617876b4b7e7d79ad07a8c17"
+    ],
+    "__v": 0
+}
+```
 ### Note: The same conditions about inventory required explained above should be true here as well. It is important to provided the ```customer``` when updating a repair. Otherwise, it will give an error. It is assumed that customer associated with this repair earlier does not change during update.
 If the repair is updated with new inventory items, then only decrement the count of newly added inventory items in inventory document and associate that item with this repair. 
+
+### Request
 
 ``` DELETE localhost:3000/repairs/6178778db7e7d79ad07a8c1e ```
 
@@ -368,6 +423,7 @@ deletedCount: 1
 ```
 ### Note: If a repair is deleted, the repair will also be deleted from the customer associated with this repair. Also the inventory items associated with this repairs will be returned to inventory and their availabilty will be incremented. 
 
+### Request
 ``` POST localhost:3000/repairs/61787d57b7e7d79ad07a8c6c/schedule ```
 
 ``` 
