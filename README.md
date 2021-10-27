@@ -52,7 +52,7 @@ The documents will be created as endpoints are tested.
     "__v": 0
 }
 ```
-### NOTE: ```repairs``` should not be specifed when creating a customer. ```repairs``` for a customer are created through ``` POST localhost:3000/repairs```.
+#### NOTE: ```repairs``` should not be specifed when creating a customer. ```repairs``` for a customer are created through ``` POST localhost:3000/repairs```.
 
 ``` GET localhost:3000/customers```
 ### Response 
