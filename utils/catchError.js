@@ -3,5 +3,4 @@ module.exports = checkError => {
         checkError(req,res,next).catch(next);
     }
 }
-
 // function to catch error
