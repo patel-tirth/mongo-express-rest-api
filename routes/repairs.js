@@ -110,10 +110,13 @@ router.put('/:repairId', catchError(async (req,res,next) => {
     const ids = repair.inventoryRequired.map(item => item._id); 
     
      // if isComplete is true, then the repair is complete and remove the repair from corresponding customer and 
-     // also return inventory items to inventory
+     // also return inventory items to inventory.. return
      if(req.body.isComplete == true){
-        const itemReturnedDocs = await Inventory.find({ '_id': { $in: getRepair.inventoryRequired} }) 
-        updateInventoryAndCustomerInc(itemReturnedDocs,getRepair)
+        // const itemReturnedDocs = await Inventory.find({ '_id': { $in: getRepair.inventoryRequired} }) 
+        const customer =  await Customer.findOne({'_id': getRepair.customer});
+    // remove this repair from customer's active repairs
+         customer.repairs.pop(getRepair);
+         customer.save();
         getRepair.isComplete = true;
         getRepair.save()
         return res.json(getRepair)
