@@ -22,6 +22,9 @@ const RepairSchema = mongoose.Schema({
         required: true
         }
     ]
+},
+{
+    timestamps: true
     
 });
 
