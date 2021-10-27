@@ -280,3 +280,112 @@ The documents will be created as endpoints are tested.
         "__v": 0
     }
 ```
+``` DELETE localhost:3000/inventory/61787ae5b7e7d79ad07a8c41```
+### Response 
+```
+deletedCount: 1
+
+```
+``` POST localhost:3000/repairs ```
+```
+{
+"scheduledDate": "2021-09-30T21:44:20.230Z",
+"customer": "617878f4b7e7d79ad07a8c2f",
+"description": "fix brake",
+"inventoryRequired": [
+    "617879a2b7e7d79ad07a8c34"
+]
+}
+```
+#### Note: To schedule a repair as above, the following conditions should be true, else it will throw error:
+1) The ```customer``` should exist in customer document.
+2) Inventory id / ids specified in ```inventoryRequired``` should exist in the inventory document. 
+3) The specified inventory ids should have a ```total_available``` count of greater than 0 to schedule a repair. 
+If scheduled date is not provided,  default scheduled date is current time + 1 day.
+After properly scheduling the repair, corresponding customer document will be updated with this ```repairs```. A customer can have multiple repairs scheduled. 
+The corresponding inventory items will also be updated with ```repair_scheduled``` denoting that the item is scheduled for a repair. 
+Also, the total available count of inventory item/items required for this repair will be decremented by 1. 
+
+``` GET localhost:3000/repairs ```
+```
+[
+    {
+        "_id": "6178778db7e7d79ad07a8c1e",
+        "scheduledDate": "2021-10-27T21:44:20.230Z",
+        "customer": "6178748fcfaee206902c6ddf",
+        "description": "buy bicycle",
+        "inventoryRequired": [
+            "617876b4b7e7d79ad07a8c17"
+        ],
+        "__v": 0
+    },
+    {
+        "_id": "61787d57b7e7d79ad07a8c6c",
+        "scheduledDate": "2021-09-30T21:44:20.230Z",
+        "customer": "617878f4b7e7d79ad07a8c2f",
+        "description": "fix brake",
+        "inventoryRequired": [
+            "617879a2b7e7d79ad07a8c34"
+        ],
+        "__v": 0
+    }
+]
+```
+``` GET localhost:3000/repairs/6178778db7e7d79ad07a8c1e ```
+### Response 
+```
+{
+    "_id": "6178778db7e7d79ad07a8c1e",
+    "scheduledDate": "2021-10-27T21:44:20.230Z",
+    "customer": "6178748fcfaee206902c6ddf",
+    "description": "buy bicycle",
+    "inventoryRequired": [
+        "617876b4b7e7d79ad07a8c17"
+    ],
+    "__v": 0
+}
+```
+``` PUT localhost:3000/repairs/6178778db7e7d79ad07a8c1e ```
+``` 
+{
+"customer": "6178748fcfaee206902c6ddf"
+"description": "fix brake and bicyle",
+"inventoryRequired": [
+    "617879a2b7e7d79ad07a8c34", "617876b4b7e7d79ad07a8c17"
+]
+}
+```
+### Note: The same conditions about inventory required explained above should be true here as well. It is important to provided the ```customer``` when updating a repair. Otherwise, it will give an error. It is assumed that customer associated with this repair earlier does not change during update.
+If the repair is updated with new inventory items, then only decrement the count of newly added inventory items in inventory document and associate that item with this repair. 
+
+``` DELETE localhost:3000/repairs/6178778db7e7d79ad07a8c1e ```
+
+# Response
+``` 
+deletedCount: 1
+```
+### Note: If a repair is deleted, the repair will also be deleted from the customer associated with this repair. Also the inventory items associated with this repairs will be returned to inventory and their availabilty will be incremented. 
+
+``` POST localhost:3000/repairs/61787d57b7e7d79ad07a8c6c/schedule ```
+
+``` 
+{
+scheduledDate : "2021-08-30T21:44:20.230Z"
+}
+```
+
+### Response 
+
+``` 
+{
+    "_id": "61787d57b7e7d79ad07a8c6c",
+    "scheduledDate": "2021-08-30T21:44:20.230Z",
+    "customer": "617878f4b7e7d79ad07a8c2f",
+    "description": "fix brake",
+    "inventoryRequired": [
+        "617879a2b7e7d79ad07a8c34"
+    ],
+    "__v": 0
+}
+```
+
