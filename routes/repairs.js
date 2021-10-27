@@ -104,14 +104,21 @@ async function updateInventory(items,repair){
 // update repairs by id 
 router.put('/:repairId', catchError(async (req,res,next) => {
     const repair = new Repair(req.body)
-    // console.log(repair.customer)
-    // console.log(req.body)
     const getRepair = await Repair.findOne({'_id': req.params.repairId});
 
     // get requested ids for items
     const ids = repair.inventoryRequired.map(item => item._id); 
     
-     // console.log(ids)
+     // if isComplete is true, then the repair is complete and remove the repair from corresponding customer and 
+     // also return inventory items to inventory
+     if(req.body.isComplete == true){
+        const itemReturnedDocs = await Inventory.find({ '_id': { $in: getRepair.inventoryRequired} }) 
+        updateInventoryAndCustomerInc(itemReturnedDocs,getRepair)
+        getRepair.isComplete = true;
+        getRepair.save()
+        return res.json(getRepair)
+        
+    }
         // before updating the repair, check if inventory has desired items for this new repair
         // also checking if customer is changed for this repair, check if new customer is present in database
 
@@ -124,6 +131,8 @@ router.put('/:repairId', catchError(async (req,res,next) => {
                 req.body,
                 {new :true} 
                 ) 
+
+                
                 // only update the inventory if there is new item required for the repair 
                 // that is, if the  difference of new and previous inventory is greater than 0
                 

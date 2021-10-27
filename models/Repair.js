@@ -15,6 +15,10 @@ const RepairSchema = mongoose.Schema({
         type: String,
         required: true
     },
+    isComplete:{
+        type: Boolean,
+        default: false
+    },
     inventoryRequired: [
         {
         type: mongoose.Schema.Types.ObjectId,
