@@ -389,6 +389,7 @@ Also, the total available count of inventory item/items required for this repair
 {
 "customer": "6178748fcfaee206902c6ddf",
 "description": "fix brake and bicyle",
+"isComplete":true, 
 "inventoryRequired": [
     "617879a2b7e7d79ad07a8c34", "617876b4b7e7d79ad07a8c17"
 ]
@@ -403,6 +404,7 @@ Also, the total available count of inventory item/items required for this repair
     "scheduledDate": "2021-10-27T21:44:20.230Z",
     "customer": "6178748fcfaee206902c6ddf",
     "description": "fix brake and bicyle",
+    "isComplete": true,
     "inventoryRequired": [
         "617879a2b7e7d79ad07a8c34",
         "617876b4b7e7d79ad07a8c17"
@@ -411,7 +413,9 @@ Also, the total available count of inventory item/items required for this repair
 }
 ```
 ### Note: The same conditions about inventory required explained above should be true here as well. It is important to provided the ```customer``` when updating a repair. Otherwise, it will give an error. It is assumed that customer associated with this repair earlier does not change during update.
+
 If the repair is updated with new inventory items, then only decrement the count of newly added inventory items in inventory document and associate that item with this repair. 
+If the repair is supposed to be  marked ```isComplete: true```, then no need to provide the ```customer```. The repair will be marked true,  and the repair associated with the customer will be removed from customers document. 
 
 ### Request
 
