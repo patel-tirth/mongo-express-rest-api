@@ -321,6 +321,7 @@ deletedCount: 1
     "scheduledDate": "2021-09-30T21:44:20.230Z",
     "customer": "617878f4b7e7d79ad07a8c2f",
     "description": "fix brake",
+    "isComplete": false,
     "inventoryRequired": [
         "617879a2b7e7d79ad07a8c34"
     ],
@@ -332,7 +333,7 @@ deletedCount: 1
 1) The ```customer``` should exist in customer document.
 2) Inventory id / ids specified in ```inventoryRequired``` should exist in the inventory document. 
 3) The specified inventory ids should have a ```total_available``` count of greater than 0 to schedule a repair. 
-If scheduled date is not provided,  default scheduled date is current time + 1 day.
+If scheduled date is not provided,  default scheduled date is current time + 1 day. Default ```isComplete``` is false.
 After properly scheduling the repair, corresponding customer document will be updated with this ```repairs```. A customer can have multiple repairs scheduled. 
 The corresponding inventory items will also be updated with ```repair_scheduled``` denoting that the item is scheduled for a repair. 
 Also, the total available count of inventory item/items required for this repair will be decremented by 1. 
