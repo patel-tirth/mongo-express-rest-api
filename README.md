@@ -3,7 +3,7 @@
 #### Tech Stack: Express, MongoDB, Mongoose ODM, Postman.
 The databse was built on MongoDB Atlas.
 
-This is a REST API for a fictional bicycle shop allowing seamless scheduling of repairs and managing inventory for customers. 
+This is a REST API for a fictional bicycle shop allowing seamless scheduling of repairs for customer and managing inventory. 
 
 To test the API, follow the steps below:
 
